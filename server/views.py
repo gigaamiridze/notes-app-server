@@ -1,13 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import NoteSerializer
-from .models import Note
+from .utils import get_note_list, get_note_detail, create_note, update_note, delete_note
 
 @api_view(['GET'])
 def get_routes(request):
     routes = [
         {
-            'Endpoint': '/notes/',
+            'Endpoint': '/notes',
             'method': 'GET',
             'body': None,
             'description': 'Returns an array of notes'
@@ -19,19 +18,19 @@ def get_routes(request):
             'description': 'Returns a single note object'
         },
         {
-            'Endpoint': '/notes/create/',
+            'Endpoint': '/notes',
             'method': 'POST',
             'body': {'body': ""},
             'description': 'Creates new note with data sent in post request'
         },
         {
-            'Endpoint': '/notes/id/update/',
+            'Endpoint': '/notes/id',
             'method': 'PUT',
             'body': {'body': ""},
             'description': 'Creates an existing note with data sent in post request'
         },
         {
-            'Endpoint': '/notes/id/delete/',
+            'Endpoint': '/notes/id',
             'method': 'DELETE',
             'body': None,
             'description': 'Deletes and exiting note'
@@ -40,42 +39,21 @@ def get_routes(request):
 
     return Response(routes)
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def get_notes(request):
-     notes = Note.objects.all().order_by('-updated')
-     serializer = NoteSerializer(notes, many=True)
+    if request.method == 'GET':
+        return get_note_list(request)
 
-     return Response(serializer.data)
+    if request.method == 'POST':
+        return create_note(request)
 
-@api_view(['GET'])
-def get_note_by_id(request, id):
-    note = Note.objects.get(id=id)
-    serializer = NoteSerializer(note, many=False)
+@api_view(['GET', 'PUT', 'DELETE'])
+def get_note(request, id):
+    if request.method == 'GET':
+        return get_note_detail(request, id)
 
-    return Response(serializer.data)
+    if request.method == 'PUT':
+        return update_note(request, id)
 
-@api_view(['POST'])
-def create_note(request):
-    data = request.data['body']
-    note = Note.objects.create(body=data['body'])
-    serializer = NoteSerializer(note, many=False)
-
-    return Response(serializer.data)
-
-@api_view(['PUT'])
-def update_note(request, id):
-    data = request.data['body']
-    note = Note.objects.get(id=id)
-    serializer = NoteSerializer(instance=note, data=data)
-
-    if serializer.is_valid():
-        serializer.save()
-
-    return Response(serializer.data)
-
-@api_view(['DELETE'])
-def delete_note(request, id):
-    note = Note.objects.get(id=id)
-    note.delete()
-
-    return Response('Note was deleted!')
+    if request.method == 'DELETE':
+        return delete_note(request, id)
