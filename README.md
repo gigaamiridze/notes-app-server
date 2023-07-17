@@ -2,8 +2,8 @@
 
 **React source code: [here](https://github.com/gigaamiridze/notes-app-client)**
 
-![Notes App Wallpaper](./static/notes-wallpaper.jpg)
+![Notes App Wallpaper](static/images/notes-wallpaper.jpg)
 
 ### App Preview:
-![Notes App](./static/notes.PNG)
-![Notes App](./static/note.PNG)
+![Notes App](static/images/notes.PNG)
+![Notes App](static/images/note.PNG)
